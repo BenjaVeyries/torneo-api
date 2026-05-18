@@ -9,14 +9,14 @@ USE torneo_api;
 -- Desactivar restricciones de llaves foráneas temporalmente para evitar bloqueos
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Limpiar tablas para evitar registros duplicados
-TRUNCATE TABLE estadisticas;
-TRUNCATE TABLE partido_jugadores;
-TRUNCATE TABLE partidos;
-TRUNCATE TABLE jugadores;
-TRUNCATE TABLE equipos;
-TRUNCATE TABLE torneos;
-TRUNCATE TABLE usuarios;
+-- Limpiar tablas para evitar registros duplicados (usamos DELETE FROM para evitar el error #1701 de TRUNCATE en MySQL)
+DELETE FROM estadisticas;
+DELETE FROM partido_jugadores;
+DELETE FROM partidos;
+DELETE FROM jugadores;
+DELETE FROM equipos;
+DELETE FROM torneos;
+DELETE FROM usuarios;
 
 -- Reactivar restricciones
 SET FOREIGN_KEY_CHECKS = 1;
