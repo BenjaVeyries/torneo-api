@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Torneo API - Dashboard Premium de Fútbol</title>
+    <!-- Estilos Personalizados -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <!-- ==========================================================================
+       ENCABEZADO PRINCIPAL (HEADER)
+       ========================================================================== -->
+    <header class="main-header">
+        <div class="logo-container">
+            <span class="logo-icon">🏆</span>
+            <h1 class="logo-text">TORNEO API</h1>
+        </div>
+        
+        <div class="auth-badge-container">
+            <div id="logged-out-section" class="flex-row-center">
+                <button id="btn-show-login" class="tab-btn active" style="padding: 0.5rem 1rem;">🔑 Iniciar Sesión</button>
+            </div>
+            <div id="logged-in-section" class="flex-row-center" style="display: none; gap: 1rem;">
+                <div class="user-badge">
+                    <span>👤</span>
+                    <span id="user-display-name">Usuario</span>
+                    <span id="user-display-role" class="role-tag role-admin">ADMIN</span>
+                </div>
+                <button id="btn-logout-action" class="btn-logout">Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+       NAVEGACIÓN POR PESTAÑAS (TABS)
+       ========================================================================== -->
+    <nav class="tabs-navigation">
+        <button class="tab-btn active" data-tab="tab-public">
+            <span>📊</span> Resultados y Posiciones
+        </button>
+        <button class="tab-btn" data-tab="tab-teams">
+            <span>🛡️</span> Gestión de Planteles
+        </button>
+        <button class="tab-btn" id="nav-admin-tab" data-tab="tab-admin">
+            <span>⚙️</span> Panel de Control
+        </button>
+    </nav>
+
+    <!-- ==========================================================================
+       SELECTOR GLOBAL DE TORNEOS (EN PÁGINA)
+       ========================================================================== -->
+    <main style="flex-grow: 1; display: flex; flex-direction: column;">
+        <div class="tab-content active" style="padding-bottom: 0;">
+            <div class="torneo-selector-card">
+                <div class="torneo-selector-info">
+                    <div class="torneo-selector-badge">⚽</div>
+                    <div>
+                        <h2 style="font-family: var(--font-heading); font-size: 1.25rem;">Torneo Activo</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Selecciona o administra el fixture del torneo</p>
+                    </div>
+                </div>
+                <div class="torneo-selector-dropdown">
+                    <select id="global-torneo-select" class="form-control">
+                        <option value="">Cargando torneos...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+           TAB 1: PORTAL PÚBLICO (RESULTADOS Y POSICIONES)
+           ========================================================================== -->
+        <section id="tab-public" class="tab-content active">
+            <div class="dashboard-grid">
+                
+                <!-- Columna Izquierda: Fixture / Calendario -->
+                <div>
+                    <div class="glass-card">
+                        <div class="glass-card-title">
+                            <span>📅</span> Calendario y Resultados (Fixture)
+                        </div>
+                        
+                        <div class="rondas-selector" id="rondas-container">
+                            <!-- Inyectado dinámicamente: Rondas/Pills -->
+                            <div class="empty-state" style="padding: 1rem;">No hay rondas disponibles</div>
+                        </div>
+
+                        <div class="fixture-section">
+                            <div class="partidos-list" id="partidos-container">
+                                <!-- Inyectado dinámicamente: Partidos de la ronda -->
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">⚽</div>
+                                    <p>Selecciona un torneo para ver sus partidos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Tabla de Posiciones y Goleadores -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Tabla de Posiciones -->
+                    <div class="glass-card">
+                        <div class="glass-card-title">
+                            <span>📈</span> Tabla de Posiciones
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table" id="standings-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Pos</th>
+                                        <th>Club</th>
+                                        <th class="text-center">PTS</th>
+                                        <th class="text-center">PJ</th>
+                                        <th class="text-center">DG</th>
+                                        <th class="text-center">GF</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="standings-tbody">
+                                    <tr>
+                                        <td colspan="6" class="empty-state">
+                                            Selecciona un torneo para cargar posiciones
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Ranking de Goleadores -->
+                    <div class="glass-card">
+                        <div class="glass-card-title">
+                            <span>👑</span> Máximos Goleadores
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table" id="goleadores-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Pos</th>
+                                        <th>Jugador</th>
+                                        <th>Equipo</th>
+                                        <th class="text-center">Goles</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="goleadores-tbody">
+                                    <tr>
+                                        <td colspan="4" class="empty-state">
+                                            Selecciona un torneo para cargar goleadores
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           TAB 2: GESTIÓN DE PLANTELES (EQUIPOS & JUGADORES)
+           ========================================================================== -->
+        <section id="tab-teams" class="tab-content">
+            <div class="dashboard-grid">
+                
+                <!-- Columna Izquierda: Formularios de Gestión (Requieren Login) -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    
+                    <!-- Crear Equipo -->
+                    <div class="glass-card">
+                        <div class="glass-card-title">
+                            <span>🛡️</span> Registrar Nuevo Equipo
+                        </div>
+                        <div id="crear-equipo-authed-view">
+                            <form id="form-crear-equipo">
+                                <div class="form-group">
+                                    <label class="form-label" for="equipo-nombre">Nombre del Equipo</label>
+                                    <input type="text" id="equipo-nombre" class="form-control" placeholder="Ej: Real Madrid" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="equipo-ciudad">Ciudad de Origen</label>
+                                    <input type="text" id="equipo-ciudad" class="form-control" placeholder="Ej: Madrid" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="equipo-capitan">Capitán Registrado (Usuario)</label>
+                                    <select id="equipo-capitan" class="form-control" required>
+                                        <option value="">Seleccione un Capitán...</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn-submit">Crear Equipo</button>
+                            </form>
+                        </div>
+                        <div id="crear-equipo-guest-view" class="empty-state">
+                            <p>🔒 Inicia sesión con rol de <strong>ADMIN</strong> o <strong>CAPITÁN</strong> para registrar equipos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Registrar Jugador -->
+                    <div class="glass-card">
+                        <div class="glass-card-title">
+                            <span>👤</span> Inscribir Jugador en Plantel
+                        </div>
+                        <div id="crear-jugador-authed-view">
+                            <form id="form-crear-jugador">
+                                <div class="form-group">
+                                    <label class="form-label" for="jugador-nombre">Nombre Completo</label>
+                                    <input type="text" id="jugador-nombre" class="form-control" placeholder="Ej: Raul Gonzalez" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="jugador-edad">Edad (Mínimo 5 años)</label>
+                                    <input type="number" id="jugador-edad" class="form-control" min="5" placeholder="Ej: 25" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="jugador-posicion">Posición en el Campo</label>
+                                    <select id="jugador-posicion" class="form-control" required>
+                                        <option value="">Seleccione posición...</option>
+                                        <option value="Arquero">Arquero</option>
+                                        <option value="Defensor">Defensor</option>
+                                        <option value="Mediocampista">Mediocampista</option>
+                                        <option value="Delantero">Delantero</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="jugador-equipo">Asignar al Equipo</label>
+                                    <select id="jugador-equipo" class="form-control" required>
+                                        <option value="">Seleccione un Equipo...</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn-submit">Registrar Jugador</button>
+                            </form>
+                        </div>
+                        <div id="crear-jugador-guest-view" class="empty-state">
+                            <p>🔒 Inicia sesión para registrar jugadores en planteles.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Columna Derecha: Acordeón / Lista de Equipos -->
+                <div>
+                    <div class="glass-card" style="height: 100%;">
+                        <div class="glass-card-title">
+                            <span>🛡️</span> Planteles y Clubes Registrados
+                        </div>
+                        <div class="teams-list-grid" id="equipos-lista-container">
+                            <!-- Inyectado dinámicamente -->
+                            <div class="empty-state">No hay equipos creados todavía</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           TAB 3: PANEL DE CONTROL (ADMINISTRADOR)
+           ========================================================================== -->
+        <section id="tab-admin" class="tab-content">
+            <div id="admin-guest-view" class="empty-state glass-card" style="max-width: 600px; margin: 3rem auto;">
+                <div class="empty-state-icon" style="filter: none; opacity: 1;">🔒</div>
+                <h2 style="font-family: var(--font-heading); margin-bottom: 0.75rem;">Acceso Restringido</h2>
+                <p style="margin-bottom: 1.5rem;">Debes iniciar sesión con una cuenta de rol <strong>ADMINISTRADOR</strong> para gestionar torneos y fixtures.</p>
+                <button class="btn-submit" id="btn-admin-prompt-login" style="max-width: 200px;">Iniciar Sesión</button>
+            </div>
+
+            <div id="admin-authed-view" style="display: none;">
+                <div class="dashboard-grid">
+                    
+                    <!-- Columna Izquierda: Acciones de Configuración de Torneos -->
+                    <div style="display: flex; flex-direction: column; gap: 2rem;">
+                        
+                        <!-- Crear Torneo -->
+                        <div class="glass-card">
+                            <div class="glass-card-title">
+                                <span>🏆</span> Crear Nuevo Torneo
+                            </div>
+                            <form id="form-crear-torneo">
+                                <div class="form-group">
+                                    <label class="form-label" for="torneo-nombre">Nombre del Torneo</label>
+                                    <input type="text" id="torneo-nombre" class="form-control" placeholder="Ej: Champions League Amateur" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="torneo-tipo">Disciplina/Tipo</label>
+                                    <input type="text" id="torneo-tipo" class="form-control" placeholder="Ej: Fútbol 11" required>
+                                </div>
+                                <button type="submit" class="btn-submit">Crear Torneo</button>
+                            </form>
+                        </div>
+
+                        <!-- Inscribir Equipos al Torneo -->
+                        <div class="glass-card">
+                            <div class="glass-card-title">
+                                <span>🔗</span> Inscribir Equipo en Torneo Activo
+                            </div>
+                            <form id="form-inscribir-equipo">
+                                <div class="form-group">
+                                    <label class="form-label">Torneo Activo</label>
+                                    <input type="text" id="inscribir-torneo-display" class="form-control" disabled value="Ninguno seleccionado">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="inscribir-equipo-select">Seleccione Equipo a Inscribir</label>
+                                    <select id="inscribir-equipo-select" class="form-control" required>
+                                        <option value="">Seleccione equipo...</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn-submit">Inscribir Equipo</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <!-- Columna Derecha: Berger Fixture Generator -->
+                    <div>
+                        <div class="glass-card" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div class="glass-card-title">
+                                    <span>⚡</span> Generador de Fixture Automático
+                                </div>
+                                <div style="margin-bottom: 1.5rem; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+                                    <p style="margin-bottom: 0.75rem;">Una vez que hayas inscrito a todos los equipos participantes en el torneo activo, puedes generar el fixture de partidos de forma automática.</p>
+                                    <p style="margin-bottom: 0.75rem;">El sistema implementa el **Algoritmo de Berger (Round-Robin)** para programar los encuentros balanceando de manera perfecta la condición de local y visitante para cada jornada.</p>
+                                    <p style="color: var(--warning); font-weight: 700;">⚠️ ATENCIÓN: Generar el fixture borrará los partidos y marcadores existentes cargados en este torneo.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(0,0,0,0.2); border: 1px dashed var(--border-glass); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: center;">
+                                <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Equipos inscritos en torneo activo</span>
+                                <span style="font-family: var(--font-heading); font-size: 2rem; font-weight: 800; color: var(--primary);" id="admin-equipos-count">0</span>
+                            </div>
+
+                            <button id="btn-generar-fixture" class="btn-submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 1.1rem; padding: 1rem;">
+                                ⚙️ AUTOGENERAR FIXTURE DE IDA
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==========================================================================
+       MODAL 1: INICIAR SESIÓN / REGISTRO
+       ========================================================================== -->
+    <div class="modal-overlay" id="modal-login">
+        <div class="modal-container" style="max-width: 420px;">
+            <button class="modal-close" id="btn-close-login">×</button>
+            <div class="modal-header-title" id="modal-login-title">Acceder al Sistema</div>
+            
+            <div class="auth-toggle">
+                <button class="auth-toggle-btn active" id="toggle-tab-login">Login</button>
+                <button class="auth-toggle-btn" id="toggle-tab-register">Registro</button>
+            </div>
+
+            <!-- Formulario de LOGIN -->
+            <form id="form-login-payload">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="admin@torneos.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit">Ingresar</button>
+            </form>
+
+            <!-- Formulario de REGISTRO (oculto por defecto) -->
+            <form id="form-register-payload" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label" for="reg-nombre">Nombre Completo</label>
+                    <input type="text" id="reg-nombre" class="form-control" placeholder="Ej: Iker Casillas" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-email">Correo Electrónico</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="casillas@madrid.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-password">Contraseña</label>
+                    <input type="password" id="reg-password" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-role">Rol de Usuario</label>
+                    <select id="reg-role" class="form-control" required>
+                        <option value="CAPITAN">Capitán de Equipo</option>
+                        <option value="ADMIN">Administrador</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit" style="background: var(--secondary); box-shadow: 0 4px 15px var(--secondary-glow);">Registrar Cuenta</button>
+            </form>
+
+            <!-- Acceso Rápido DEMO -->
+            <div class="demo-users-container">
+                <div class="demo-title">Acceso rápido con 1 Clic</div>
+                <div class="demo-grid">
+                    <button class="btn-demo-quick" id="btn-demo-admin">
+                        <span>🛡️ Entrar como <strong>ADMIN</strong></span>
+                        <span style="font-size: 0.7rem; opacity: 0.8;">Admin Central</span>
+                    </button>
+                    <button class="btn-demo-quick" id="btn-demo-capitan">
+                        <span>⚽ Entrar como <strong>CAPITÁN</strong></span>
+                        <span style="font-size: 0.7rem; opacity: 0.8;">Iker Casillas</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       MODAL 2: CARGAR MARCADOR DE PARTIDO (Solo ADMIN)
+       ========================================================================== -->
+    <div class="modal-overlay" id="modal-marcador">
+        <div class="modal-container" style="max-width: 500px;">
+            <button class="modal-close" id="btn-close-marcador">×</button>
+            <div class="modal-header-title">Cargar Marcador del Partido</div>
+            
+            <form id="form-cargar-marcador">
+                <input type="hidden" id="marcador-partido-id">
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-glass);">
+                    <div style="flex: 1; text-align: right;">
+                        <label class="form-label" style="font-size: 0.95rem; font-weight: 700; color: #fff;" id="label-local-name">Local</label>
+                        <input type="number" id="marcador-goles-local" class="form-control" min="0" required style="width: 70px; text-align: center; display: inline-block; margin-top: 0.5rem;" placeholder="0">
+                    </div>
+                    <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-muted); margin-top: 1.5rem;">VS</div>
+                    <div style="flex: 1; text-align: left;">
+                        <label class="form-label" style="font-size: 0.95rem; font-weight: 700; color: #fff;" id="label-visitante-name">Visitante</label>
+                        <input type="number" id="marcador-goles-visitante" class="form-control" min="0" required style="width: 70px; text-align: center; display: inline-block; margin-top: 0.5rem;" placeholder="0">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit" style="margin-bottom: 1.5rem;">Guardar Marcador</button>
+            </form>
+
+            <!-- Sección: Registrar Estadísticas del Partido -->
+            <div style="border-top: 1px solid var(--border-glass); padding-top: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: #fff;">⚽ Incidencias / Estadísticas</h3>
+                    <button class="btn-small btn-small-primary" id="btn-show-add-stat">+ Agregar Goles/Tarjetas</button>
+                </div>
+
+                <!-- Formulario agregar estadísticas (Oculto por defecto, colapsable) -->
+                <div id="container-add-stat-form" style="display: none; background: rgba(31, 41, 55, 0.4); border: 1px solid var(--border-glass); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                    <form id="form-registrar-estadistica">
+                        <div class="form-group">
+                            <label class="form-label" for="stat-jugador-select">Jugador del Partido</label>
+                            <select id="stat-jugador-select" class="form-control" required>
+                                <option value="">Seleccione jugador...</option>
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                            <div>
+                                <label class="form-label">Goles</label>
+                                <input type="number" id="stat-goles" class="form-control" min="0" value="0" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Amarillas</label>
+                                <input type="number" id="stat-amarillas" class="form-control" min="0" max="2" value="0" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Rojas</label>
+                                <input type="number" id="stat-rojas" class="form-control" min="0" max="1" value="0" required>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="submit" class="btn-submit" style="font-size: 0.85rem; padding: 0.5rem; flex: 2;">Guardar Incidencia</button>
+                            <button type="button" class="btn-logout" id="btn-cancel-stat" style="font-size: 0.85rem; padding: 0.5rem; flex: 1;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Lista de Estadísticas Registradas en este Partido -->
+                <div class="partido-stats-summary" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass);">
+                    <div class="partido-stats-title">Estadísticas registradas en este encuentro</div>
+                    <div id="modal-partido-stats-list" class="partido-stats-list">
+                        <!-- Inyectado dinámicamente -->
+                        <div style="color: var(--text-muted); font-size: 0.75rem; text-align: center; padding: 0.5rem 0;">Ninguna estadística registrada todavía. ¡Carga goles o tarjetas!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor flotante de notificaciones TOAST -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Script de Control Principal -->
+    <script src="/js/app.js"></script>
+</body>
+</html>

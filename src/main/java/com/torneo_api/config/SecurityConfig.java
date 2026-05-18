@@ -37,6 +37,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints de registro e inicio de sesión son públicos
                         .requestMatchers("/auth/**").permitAll()
+                        // Permitir recursos estáticos para el frontend
+                        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/favicon.ico").permitAll()
                         // Consultas de datos son públicas para todos los usuarios (según requerimiento)
                         .requestMatchers(HttpMethod.GET, "/torneos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/equipos/**").permitAll()
