@@ -743,10 +743,19 @@ function renderEquiposGrid() {
             playersHTML = '<div class="empty-state" style="padding: 0.5rem; font-size: 0.8rem;">Sin jugadores inscritos</div>';
         } else {
             eqPlayers.forEach(p => {
+                let deleteBtn = '';
+                if (state.currentUser) {
+                    deleteBtn = `
+                        <button style="background: none; border: none; cursor: pointer; padding: 2px 4px; font-size: 0.8rem; filter: grayscale(1) opacity(0.6); transition: all 0.2s;" onmouseover="this.style.filter='none'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(1) opacity(0.6)';" onclick="eliminarJugadorAction(${p.id}, '${p.nombre}')" title="Eliminar Jugador">🗑️</button>
+                    `;
+                }
                 playersHTML += `
                     <div class="player-row">
                         <span>🏃 ${p.nombre}</span>
-                        <span class="player-pos-badge">${p.posicion}</span>
+                        <div style="display: flex; gap: 0.4rem; align-items: center;">
+                            <span class="player-pos-badge">${p.posicion}</span>
+                            ${deleteBtn}
+                        </div>
                     </div>
                 `;
             });
@@ -1172,4 +1181,24 @@ async function openMarcadorModal(partidoId, localName, visitanteName, currentLoc
     }
     
     openModal('modal-marcador');
+}
+
+// Acción para eliminar un jugador (exclusiva de Admin o Capitán de ese equipo)
+async function eliminarJugadorAction(id, nombre) {
+    if (!confirm(`¿Estás seguro de que deseas eliminar al jugador ${nombre}?`)) {
+        return;
+    }
+    
+    try {
+        await apiFetch(`/jugadores/${id}`, {
+            method: 'DELETE'
+        });
+        
+        showToast(`Jugador "${nombre}" eliminado correctamente`);
+        
+        // Recargar planteles y listas
+        loadPlayersList();
+    } catch (err) {
+        showToast(`No tienes permiso para eliminar este jugador: ${err.message}`, 'error');
+    }
 }
