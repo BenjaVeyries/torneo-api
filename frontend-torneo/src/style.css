@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@source "./**/*.{ts,tsx,html}";
+
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    background: #070b14;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100svh;
+    color: #e5eefb;
+    background:
+      radial-gradient(circle at 12% 4%, rgba(20, 184, 166, 0.24), transparent 26rem),
+      radial-gradient(circle at 84% 0%, rgba(59, 130, 246, 0.24), transparent 30rem),
+      linear-gradient(135deg, #07111f 0%, #101522 48%, #090d16 100%);
+  }
+
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply border border-white/10 bg-white/[0.07] shadow-2xl shadow-black/20 backdrop-blur-xl;
+  }
+
+  .panel {
+    @apply rounded-2xl border border-white/10 bg-slate-950/50 shadow-xl shadow-black/20;
+  }
+
+  .field {
+    @apply h-11 w-full rounded-xl border border-white/10 bg-white/[0.06] px-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-bold uppercase tracking-[0.14em] text-slate-400;
+  }
+
+  .btn {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .btn-primary {
+    @apply bg-cyan-300 text-slate-950 hover:bg-cyan-200;
+  }
+
+  .btn-ghost {
+    @apply border border-white/10 bg-white/[0.06] text-slate-100 hover:bg-white/[0.1];
+  }
+
+  .btn-danger {
+    @apply border border-rose-300/20 bg-rose-500/10 text-rose-100 hover:bg-rose-500/20;
+  }
+
+  .card {
+    @apply rounded-2xl border border-white/10 bg-white/[0.06] p-5 shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-white/[0.09];
+  }
+
+  .pill {
+    @apply inline-flex items-center rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-bold text-slate-200;
+  }
+}
